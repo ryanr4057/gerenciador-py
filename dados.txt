@@ -1,0 +1,138 @@
+
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`membros`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`membros` (
+  `id_memb` INT NOT NULL,
+  `nome` VARCHAR(45) NULL,
+  `func` VARCHAR(45) NULL,
+  `habili` VARCHAR(45) NULL,
+  PRIMARY KEY (`id_memb`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`projeto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`projeto` (
+  `id_proj` INT NOT NULL,
+  `nome` VARCHAR(45) NULL,
+  `descricao` VARCHAR(45) NULL,
+  `data_ini` DATE NULL,
+  `data_term` DATE NULL,
+  `status` VARCHAR(45) NULL,
+  `respons` INT NOT NULL,
+  PRIMARY KEY (`id_proj`),
+  INDEX `fk_projeto_membros1_idx` (`respons` ASC) VISIBLE,
+  CONSTRAINT `fk_projeto_membros1`
+    FOREIGN KEY (`respons`)
+    REFERENCES `mydb`.`membros` (`id_memb`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`tarefas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`tarefas` (
+  `id_tar` INT NOT NULL,
+  `descric` VARCHAR(45) NULL,
+  `data_ini` DATE NULL,
+  `data_ter` DATE NULL,
+  `status` VARCHAR(45) NULL,
+  `proj_assoc` INT NOT NULL,
+  `memb_respons` INT NOT NULL,
+  PRIMARY KEY (`id_tar`),
+  INDEX `fk_tarefas_projeto_idx` (`proj_assoc` ASC) VISIBLE,
+  INDEX `fk_tarefas_membros1_idx` (`memb_respons` ASC) VISIBLE,
+  CONSTRAINT `fk_tarefas_projeto`
+    FOREIGN KEY (`proj_assoc`)
+    REFERENCES `mydb`.`projeto` (`id_proj`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tarefas_membros1`
+    FOREIGN KEY (`memb_respons`)
+    REFERENCES `mydb`.`membros` (`id_memb`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`membros_do_projeto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`membros_do_projeto` (
+  `id_membro` INT NOT NULL,
+  `id_proj` INT NOT NULL,
+  PRIMARY KEY (`id_membro`, `id_proj`),
+  INDEX `fk_membros_has_projeto_projeto1_idx` (`id_proj` ASC) VISIBLE,
+  INDEX `fk_membros_has_projeto_membros1_idx` (`id_membro` ASC) VISIBLE,
+  CONSTRAINT `fk_membros_has_projeto_membros1`
+    FOREIGN KEY (`id_membro`)
+    REFERENCES `mydb`.`membros` (`id_memb`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_membros_has_projeto_projeto1`
+    FOREIGN KEY (`id_proj`)
+    REFERENCES `mydb`.`projeto` (`id_proj`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`documentos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`documentos` (
+  `id_doc` INT NOT NULL,
+  `nome` VARCHAR(45) NULL,
+  `descric` VARCHAR(45) NULL,
+  `versao` VARCHAR(45) NULL,
+  `id_proj` INT NOT NULL,
+  PRIMARY KEY (`id_doc`),
+  INDEX `fk_documentos_projeto1_idx` (`id_proj` ASC) VISIBLE,
+  CONSTRAINT `fk_documentos_projeto1`
+    FOREIGN KEY (`id_proj`)
+    REFERENCES `mydb`.`projeto` (`id_proj`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`relatorios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`relatorios` (
+  `id_relat` INT NOT NULL,
+  `data_ger` DATE NULL,
+  `tipo_rel` VARCHAR(45) NULL,
+  `id_proj` INT NOT NULL,
+  PRIMARY KEY (`id_relat`),
+  INDEX `fk_relatorios_projeto1_idx` (`id_proj` ASC) VISIBLE,
+  CONSTRAINT `fk_relatorios_projeto1`
+    FOREIGN KEY (`id_proj`)
+    REFERENCES `mydb`.`projeto` (`id_proj`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
